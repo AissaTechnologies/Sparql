@@ -1,0 +1,267 @@
+package org.gdgrome.opendata.camera.server;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+
+public class CopyOfSparqlQueryService {
+	//public String sparqlQueryData(){
+	public int sparqlQueryData(){
+//		//init reader
+//		BufferedReader reader = null;
+//		try {
+//			reader = new BufferedReader(new FileReader("C://sparqlQuery.txt"));
+//		} catch (FileNotFoundException e) {			
+//			e.printStackTrace();
+//		}
+//		String line = null;
+		//defining SPARQL Query
+//		String sparqlQuery = "prefix ocd: <http://dati.camera.it/ocd/> " +							
+//							" prefix dc: <http://purl.org/dc/elements/1.1/> " +
+//							"SELECT distinct * WHERE {" +
+//							"?votazione a ocd:votazione; " +
+//							"dc:date ?data; " +
+//							"dc:title ?denominazione; " +
+//							"dc:description ?descrizione;" +
+//							"ocd:votanti ?votanti;" + 
+//							"ocd:richiestaFiducia 1;" + 
+//							"ocd:approvato ?approvato;" + 
+//							"ocd:favorevoli ?favorevoli;" + 
+//							"ocd:contrari ?contrari;" +
+//							"ocd:astenuti ?astenuti;" + 
+//							"ocd:rif_leg ?leg} " + 
+//							"ORDER BY DESC(?data)";
+	//String sparqlQuery = "select ?person where {?person a foaf:Person} ";
+		String sparqlQuery = " SELECT ?resource ?value " + 
+							" WHERE { " + 
+							" ?resource a <http://dbpedia.org/class/yago/CitiesAndTownsInAbruzzo> . " + 
+							" ?resource <http://dbpedia.org/property/populationTotal> ?value . " + 
+							" FILTER (?value > 50000) " + 
+							" } " + 
+							" ORDER BY ?resource ?value";
+
+//		String sparqlQuery = "prefix ocd: <http://dati.camera.it/ocd/> " +
+//				" prefix foaf: <http://xmlns.com/foaf/0.1/> " +
+//				" prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+//				" prefix dc: <http://purl.org/dc/elements/1.1/> " +
+//				" ##prefix dcterms: <http://purl.org/dc/terms/> " +
+//				" SELECT DISTINCT ?persona ?cognome ?nome " +
+//				" ?dataNascita  ?nato ?luogoNascita ?genere " +
+//				" ?collegio ?nomeGruppo ?sigla ?commissione ?aggiornamento " + 
+//				" WHERE { " +
+//				" ?persona ocd:rif_mandatoCamera ?mandato; a foaf:Person. " +
+//				" ## deputato " +
+//				" ?d a ocd:deputato; ocd:aderisce ?aderisce; " +
+//				" ocd:rif_leg <http://dati.camera.it/ocd/legislatura.rdf/repubblica_17>; " +
+//				" ocd:rif_mandatoCamera ?mandato. " +
+//				" ##anagrafica " +
+//				" ?d foaf:surname ?cognome; foaf:gender ?genere;foaf:firstName ?nome. " +
+//				" OPTIONAL{ " +
+//				" ?persona <http://purl.org/vocab/bio/0.1/Birth> ?nascita. " +
+//				" ?nascita <http://purl.org/vocab/bio/0.1/date> ?dataNascita; " +
+//				" rdfs:label ?nato; ocd:rif_luogo ?luogoNascitaUri. " +
+//				" ?luogoNascitaUri dc:title ?luogoNascita. " +
+//				" } " +
+//				" ##aggiornamento del sistema " +
+//				" OPTIONAL{?d <http://lod.xdams.org/ontologies/ods/modified> ?aggiornamento.} " +
+//				" ## mandato " +
+//				" ?mandato ocd:rif_elezione ?elezione. " +  
+//				" MINUS{?mandato ocd:endDate ?fineMandato.} " +
+//				" ## elezione " +
+//				" ?elezione dc:coverage ?collegio. " +
+//				" ## adesione a gruppo " +
+//				" ?aderisce ocd:rif_gruppoParlamentare ?gruppo. " +
+//				" ?gruppo <http://purl.org/dc/terms/alternative> ?sigla; " +
+//				" dc:title ?nomeGruppo." +
+//				" MINUS{?aderisce ocd:endDate ?fineAdesione} " +
+//
+//				" ## organo " +
+//				" ?d ocd:membro ?membro.?membro ocd:rif_organo ?organo. " +
+//				" ?organo dc:title ?commissione ." +
+//				" MINUS{?membro ocd:endDate ?fineMembership} " +
+//				"}";
+		//String sparqlQuery = "";
+		//read line
+//		while(line != null){
+//			try {
+//				line = reader.readLine();				
+//				System.out.println("line = " + line);
+//				//sparqlQuery += sparqlQuery + line;
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		if(line == null){
+//			try {				
+//				reader.close();
+//			} catch (IOException e) {				
+//				e.printStackTrace();
+//			}
+//		}
+		//return sparqlQuery;
+		Query query = QueryFactory.create(sparqlQuery);
+	    ARQ.getContext().setTrue(ARQ.useSAX);
+	    //Executing SPARQL Query and pointing to the DBpedia SPARQL Endpoint 
+	    //QueryExecution qexec = QueryExecutionFactory.sparqlService("http://dati.camera.it/sparql", query); //http://dati.camera.it/sparql is the sparql endpoint
+	    QueryExecution qexec = QueryExecutionFactory.sparqlService("http://dati.camera.it/sparql", query); //http://dati.camera.it/sparql is the sparql endpoint
+	    //Retrieving the SPARQL Query results
+	    ResultSet results = qexec.execSelect();
+	    //ResultSetFormatter.out(System.out, results, query); //system.out should list the sparql query result... HOW TO GET JSON format? like the following command: rsparql --service http://dati.camera.it/sparql --query /Users/mac/Desktop/APP_OPENDATA_CAMERA/TESTS/test.sparql --results json > test.txt
+	    ResultSetFormatter.outputAsJSON(results);
+	    int ret = results.getRowNumber();
+	    System.out.println("WS ============= " + ret);
+	    
+	    return ret;
+	}
+	
+}
+
+
+
+
+
+
+package org.gdgrome.opendata.camera.server;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import com.hp.hpl.jena.query.ARQ;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
+
+public class SparqlQueryService {
+	public String sparqlQueryData(){
+	
+		//init reader
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader("C://sparqlQuery.txt"));
+		} catch (FileNotFoundException e) {			
+			e.printStackTrace();
+		}
+		String line = null;
+		//defining SPARQL Query
+		String sparqlQuery = " SELECT ?resource ?value " + 
+							" WHERE { " + 
+							" ?resource a <http://dbpedia.org/class/yago/CitiesAndTownsInAbruzzo> . " + 
+							" ?resource <http://dbpedia.org/property/populationTotal> ?value . " + 
+							" FILTER (?value > 50000) " + 
+							" } " + 
+							" ORDER BY ?resource ?value";
+
+//		String sparqlQuery = "prefix ocd: <http://dati.camera.it/ocd/> " +
+//				" prefix foaf: <http://xmlns.com/foaf/0.1/> " +
+//				" prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+//				" prefix dc: <http://purl.org/dc/elements/1.1/> " +
+//				" ##prefix dcterms: <http://purl.org/dc/terms/> " +
+//				" SELECT DISTINCT ?persona ?cognome ?nome " +
+//				" ?dataNascita  ?nato ?luogoNascita ?genere " +
+//				" ?collegio ?nomeGruppo ?sigla ?commissione ?aggiornamento " + 
+//				" WHERE { " +
+//				" ?persona ocd:rif_mandatoCamera ?mandato; a foaf:Person. " +
+//				" ## deputato " +
+//				" ?d a ocd:deputato; ocd:aderisce ?aderisce; " +
+//				" ocd:rif_leg <http://dati.camera.it/ocd/legislatura.rdf/repubblica_17>; " +
+//				" ocd:rif_mandatoCamera ?mandato. " +
+//				" ##anagrafica " +
+//				" ?d foaf:surname ?cognome; foaf:gender ?genere;foaf:firstName ?nome. " +
+//				" OPTIONAL{ " +
+//				" ?persona <http://purl.org/vocab/bio/0.1/Birth> ?nascita. " +
+//				" ?nascita <http://purl.org/vocab/bio/0.1/date> ?dataNascita; " +
+//				" rdfs:label ?nato; ocd:rif_luogo ?luogoNascitaUri. " +
+//				" ?luogoNascitaUri dc:title ?luogoNascita. " +
+//				" } " +
+//				" ##aggiornamento del sistema " +
+//				" OPTIONAL{?d <http://lod.xdams.org/ontologies/ods/modified> ?aggiornamento.} " +
+//				" ## mandato " +
+//				" ?mandato ocd:rif_elezione ?elezione. " +  
+//				" MINUS{?mandato ocd:endDate ?fineMandato.} " +
+//				" ## elezione " +
+//				" ?elezione dc:coverage ?collegio. " +
+//				" ## adesione a gruppo " +
+//				" ?aderisce ocd:rif_gruppoParlamentare ?gruppo. " +
+//				" ?gruppo <http://purl.org/dc/terms/alternative> ?sigla; " +
+//				" dc:title ?nomeGruppo." +
+//				" MINUS{?aderisce ocd:endDate ?fineAdesione} " +
+//
+//				" ## organo " +
+//				" ?d ocd:membro ?membro.?membro ocd:rif_organo ?organo. " +
+//				" ?organo dc:title ?commissione ." +
+//				" MINUS{?membro ocd:endDate ?fineMembership} " +
+//				"}";
+		//String sparqlQuery = "";
+		//read line
+		while(line != null){
+			try {
+				line = reader.readLine();				
+				System.out.println("line = " + line);
+				//sparqlQuery += sparqlQuery + line;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(line == null){
+			try {				
+				reader.close();
+			} catch (IOException e) {				
+				e.printStackTrace();
+			}
+		}
+		return sparqlQuery;
+	    
+	}
+	
+}
+
+PREFIX ocd: <http://dati.camera.it/ocd/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX ocd: <http://dati.camera.it/ocd/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+PREFIX : <http://dbpedia.org/resource/>
+PREFIX dbpedia2: <http://dbpedia.org/property/>
+PREFIX dbpedia: <http://dbpedia.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+
+"PREFIX ocd: <http://dati.camera.it/ocd/> "
+"PREFIX dc: <http://purl.org/dc/elements/1.1/> "
+"SELECT distinct * WHERE { " +
+	"?votazione a ocd:votazione; " +
+	"dc:date ?data; " +
+	"dc:title ?denominazione; " +
+	"dc:description ?descrizione; " +
+	"ocd:votanti ?votanti; " + 
+	"ocd:richiestaFiducia 1; " + 
+	"ocd:approvato ?approvato; " + 
+	"ocd:favorevoli ?favorevoli; " + 
+	"ocd:contrari ?contrari; " +
+	"ocd:astenuti ?astenuti; " + 
+	"ocd:rif_leg ?leg} " + 
+" ORDER BY DESC(?data)";
+
