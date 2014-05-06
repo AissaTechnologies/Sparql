@@ -21,8 +21,14 @@ public class TestSparqlQuery {
 		try {
 			stub = new SparqlQueryServiceStub();			
 			SparqlQueryData sparqlQueryData0 = new SparqlQueryData();
-			String tag = "PREFIX ocd: <http://dati.camera.it/ocd/> PREFIX dc: <http://purl.org/dc/elements/1.1/> ";
-			String sparqlQueryString = tag + stub.sparqlQueryData(sparqlQueryData0).get_return();
+			//String tag = "PREFIX ocd: <http://dati.camera.it/ocd/> PREFIX dc: <http://purl.org/dc/elements/1.1/> ";
+			String tagAnag = "prefix ocd: <http://dati.camera.it/ocd/> " + 
+							"prefix foaf: <http://xmlns.com/foaf/0.1/> " + 
+							"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> " + 
+							"prefix dc: <http://purl.org/dc/elements/1.1/> ";
+							//"##prefix dcterms: <http://purl.org/dc/terms/> ";
+			//String sparqlQueryString = tag + stub.sparqlQueryData(sparqlQueryData0).get_return();
+			String sparqlQueryString = tagAnag + stub.sparqlQueryData(sparqlQueryData0).get_return();
 			System.out.println("sparqlQueryString = " + sparqlQueryString);
 			
 			Query query = QueryFactory.create(sparqlQueryString);
