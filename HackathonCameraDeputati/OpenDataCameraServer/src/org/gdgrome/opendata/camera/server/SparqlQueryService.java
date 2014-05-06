@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class SparqlQueryService {
 	public String sparqlQueryData() throws IOException{
-		
+		//sparql query votes
 //		String sparqlQuery = "SELECT distinct * WHERE { " +
 //		"?votazione a ocd:votazione; " +
 //		"dc:date ?data; " +
@@ -19,7 +19,7 @@ public class SparqlQueryService {
 //		"ocd:rif_leg ?leg} " + 
 //	" ORDER BY DESC(?data)";
 		
-
+		//spaqrl query members
 		String sparqlQuery = "SELECT DISTINCT ?persona ?cognome ?nome " + 
 			"?dataNascita  ?nato ?luogoNascita ?genere " + 
 			"?collegio ?nomeGruppo ?sigla ?commissione ?aggiornamento " + 
